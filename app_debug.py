@@ -13,16 +13,26 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 @app.route('/')
 def home():
-    return '✅ Bridge Server is Running (Debug Mode)'
+    return '✅ Bridge Server is Live (Advanced Debug Mode)'
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
+    print("\n🔔 Webhook endpoint triggered!")
+    
     try:
-        print("\n✅ Webhook was hit!")
+        # Print raw headers
+        print("\n🧾 Headers:")
+        for key, value in request.headers.items():
+            print(f"{key}: {value}")
 
+        # Print body as raw text
+        print("\n📦 Raw request body:")
+        print(request.data.decode('utf-8'))
+
+        # Try to parse as JSON
         data = request.get_json(force=True)
 
-        print("\n📩 [DEBUG] Received Telegram Update:")
+        print("\n📩 [DEBUG] Parsed Telegram Update:")
         print(json.dumps(data, indent=2, ensure_ascii=False))
 
         update = telegram.Update.de_json(data, bot)
@@ -41,7 +51,7 @@ def webhook():
             print("⚠️ التحديث ما فيهش message...")
 
     except Exception as e:
-        print(f"❌ وقعات شي غلطة: {str(e)}")
+        print(f"❌ Error: {str(e)}")
 
     return 'OK'
 app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
